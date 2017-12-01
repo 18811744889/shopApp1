@@ -13,28 +13,34 @@
 			</p>
 		</div>
 		<div class="hao1">
-			<p><img src="../../assets/icon1.jpg" /><input type="text" @focus="clear('phone')" :class="{red:phoneRed}" v-model="phone" placeholder="请输入您的手机号" /></p>
-			<p><img src="../../assets/icon2.jpg" /><input type="text" @focus="clear('yzm')" :class="{red:yzmRed}" v-model="yzm" placeholder="请输入验证码" />
+
+			<p><img src="../../assets/icon1.jpg" /><input type="text" v-model="phone" @focus="clear('phone')" placeholder="请输入您的手机号" /></p>
+
+			<p><img src="../../assets/icon2.jpg" /><input type="text" v-model="yzm" @focus="clear('yzm')" placeholder="请输入验证码" />
 				<button @click="getCode()" class="huoqu" :disabled="!show">
 					<span v-show="show">获取验证码</span>
          			<span v-show="!show" class="count">{{count}}s</span>
 				</button>
 			</p>
-			<p><img src="../../assets/icon3.jpg" /><input type="text" @focus="clear('pwd')" :class="{red:pwdRed}" v-model="pwd" placeholder="请输入密码" /></p>
-			<p><img src="../../assets/icon4.png" /><input type="text" @focus="clear('qrpwd')" :class="{red:qrpwdRed}" v-model="qrpwd" placeholder="请确认密码" /></p>
+
+			<p><img src="../../assets/icon3.jpg" /><input type="text" v-model="password" @focus="clear('password')" placeholder="请输入密码" /></p>
+
+			<p><img src="../../assets/icon4.png" /><input type="text" v-model="qrpwd" @focus="clear('qrpwd')" placeholder="请确认密码" /></p>
 		</div>
 		<p class="btn1" @click="register()"><button>注册</button></p>
 	</div>
 </template>
 
 <script>
+	import { sendCode, regWithPhone } from '../../api/login'
+
 	export default {
 		name: 'app',
 		data() {
 			return {
 				phone: '',
 				yzm: '',
-				pwd: '',
+				password: '',
 				qrpwd: '',
 				phoneRed: false,
 				yzmRed: false,
@@ -46,11 +52,11 @@
 			}
 		},
 		methods: {
-
+			//			返回
 			black() {
 				this.$router.push('/startPage')
 			},
-
+			//			正则判断
 			clear(val) {
 				switch(val) {
 					case 'phone':
@@ -65,9 +71,9 @@
 							this.yzmRed = false;
 						}
 						break;
-					case 'pwd':
+					case 'password':
 						if(this.pwdRed == true) {
-							this.pwd = '';
+							this.password = '';
 							this.pwdRed = false;
 						}
 						break;
@@ -80,62 +86,57 @@
 				}
 			},
 
+			//			注册手机号
 			register() {
-				if(this.phone == '') {
+
+				if(this.phone == '' && this.yzm == '' && this.password == '' && this.qrpwd == '') {
 					this.phone = '手机号不能为空'
 					this.phoneRed = true
+					this.yzm = '验证码不能为空'
+					this.yzmRed = true
+					this.password = '密码不能为空'
+					this.pwdRed = true
+					this.qrpwd = '确认密码不能为空'
+					this.qrpwdRed = true
 				} else {
-					if(!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(this.phone))) {
-						this.phone = '请填写正确的手机号码'
-						this.phoneRed = true
-						return;
+					let params = {
+						phone: this.phone,
+						password: this.password
 					}
-					if(this.yzm == '') {
-						this.yzm = '验证码不能为空'
-						this.yzmRed = true
-					} else {
-						if(this.pwd == '') {
-							this.pwd = '密码不能为空'
-							this.pwdRed = true
+					regWithPhone(params).then((res) => {
+						let msg = res.data.error_code
+						if(msg == 0) {
+							console.log('注册成功')
+							this.$router.push('/startPage')
 						} else {
-							if(this.qrpwd == this.pwd) {
-								var url = 'http://114.55.249.153:8028/login/regWithPhone';
-								var options = {
-									phone: this.phone,
-									password: this.pwd
-								}
-								this.$http.post(url, options, {
-									emulateJSON: true
-								}).then((res) => {
-									if(res.data.flag == '1') {
-										console.log("注册成功")
-										this.$router.push('/startPage');
-									}
-								})
-							} else {
-								this.qrpwd = '两次密码不一致'
-								this.qrpwdRed = true
-							}
+							console.log('注册失败')
 						}
-					}
+					})
 				}
 			},
 
+			//			倒计时功能
 			getCode() {
-				const TIME_COUNT = 60;
-				if(!this.timer) {
-					this.count = TIME_COUNT;
-					this.show = false;
-					this.timer = setInterval(() => {
-						if(this.count > 0 && this.count <= TIME_COUNT) {
-							this.count--;
-						} else {
-							this.show = true;
-							clearInterval(this.timer);
-							this.timer = null;
-						}
-					}, 1000)
+
+				let params = {
+					phone: this.phone
 				}
+				sendCode(params).then((res) => {
+					const TIME_COUNT = 60;
+					if(!this.timer) {
+						this.count = TIME_COUNT;
+						this.show = false;
+						this.timer = setInterval(() => {
+							if(this.count > 0 && this.count <= TIME_COUNT) {
+								this.count--;
+							} else {
+								this.show = true;
+								clearInterval(this.timer);
+								this.timer = null;
+							}
+						}, 1000)
+					}
+				})
 			}
 
 		}
@@ -197,6 +198,7 @@
 		border: none;
 		border-bottom: 1px #bbbbbb solid;
 		padding-left: 30px;
+		outline: none;
 	}
 	
 	.hao1 img {

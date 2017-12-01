@@ -16,12 +16,15 @@
 			<p><img src="../../assets/icon1.jpg" /><input type="text" @focus="clear('phone')" :class="{red:phoneRed}" v-model="phone" placeholder="请输入手机号" /></p>
 			<p><img src="../../assets/icon3.jpg" /><input type="password" @focus="clear('pwd')" :class="{red:pwdRed}" v-model="pwd" placeholder="请输入密码" /></p>
 		</div>
-		<p class="btn" @click="register()"><button>登录</button></p>
+		<p class="btn"><button @click="register()">登录</button></p>
 		<p class="di" @click="wang()">忘记密码？</p>
 	</div>
 </template>
 
 <script>
+	
+	import { LoginByPhone } from '../../api/login'
+	
 	export default {
 		name: 'app',
 		data() {
@@ -60,34 +63,31 @@
 					this.phone = '手机号不能为空'
 					this.phoneRed = true
 				} else {
-					if(!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(this.phone))) {
+					if(!(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(this.phone))) {
 						this.phone = '请填写正确的手机号码'
 						this.phoneRed = true
 						return;
+					}
+					if(this.pwd == '') {
+						this.pwd = '密码不能为空'
+						this.pwdRed = true
 					} else {
-						if(this.pwd == '') {
-							this.pwd = '密码不能为空'
-							this.pwdRed = true
-						} else {
-							if(this.qrpwd == this.pwd) {
-								var url = 'http://114.55.249.153:8028/login/LoginByPhone';
-								var options = {
-									phone: this.phone,
-									password: this.pwd
-								}
-								this.$http.post(url, options, {
-									emulateJSON: true
-								}).then((res) => {
-									if(res.data.flag == '1') {
-										console.log("登录成功")
-										this.$router.push('/startPage');
-									}
-								})
-							} else {
-								this.qrpwd = '两次密码不一致'
-								this.qrpwdRed = true
-							}
+						//登录发送数据 判断用户与密码是否正确
+						var options = {
+							phone: this.phone,
+							password: this.pwd,
 						}
+						
+						LoginByPhone(options).then((res)=>{
+							console.log(res.data)
+							if(res.data['error_code'] == '0') {
+								this.$router.push('/startPage');
+							} else {
+								this.phone = '手机号码或密码不正确'
+								this.phoneRed = true
+								this.pwd = ''
+							}
+						})
 					}
 				}
 			},
@@ -161,6 +161,7 @@
 		border: none;
 		border-bottom: 1px #bbbbbb solid;
 		text-align: center;
+		outline: none;
 	}
 	
 	.btn {

@@ -6,7 +6,7 @@
 		</div>
 		<div class="naa">
 			<p style="font-size: 18px;">短信验证码已发送,请输入验证码</p>
-			<p><input type="text" placeholder="验证码" class="in" /></p>
+			<p><input type="text" placeholder="验证码" class="in" v-model="inPutCode" /></p>
 		</div>
 
 		<div class="di">
@@ -21,7 +21,13 @@
 		name: 'app',
 		data() {
 			return {
-				msg: 'Welcome to Your Vue.js App'
+				code:'',
+				inPutCode:''
+			}
+		},
+		created(){
+			if (localStorage.getItem('code')) {
+				this.code=localStorage.getItem('code')
 			}
 		},
 		methods: {
@@ -29,7 +35,13 @@
 				this.$router.push('/zhaohuimima')
 			},
 			xia() {
-				this.$router.push('/mima')
+				
+//				判断验证码是否一致
+				if (this.inPutCode=== this.code) {
+					console.log(this.inPutCode)
+					console.log(this.code)
+					this.$router.push('/mima')
+				}
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 		</div>
 		<div class="naa">
 			<p style="font-size: 18px;">请输入您的手机号码</p>
-			<p><input type="text" placeholder="手机号" class="in"/></p>
+			<p><input type="text" placeholder="手机号" class="in" v-model="phone"/></p>
 		</div>
 		
 		<div class="di">
@@ -17,11 +17,14 @@
 </template>
 
 <script>
+	
+	import { findPasswordByPhone } from '../../api/login'
+	
 	export default {
 		name: 'app',
 		data() {
 			return {
-				msg: 'Welcome to Your Vue.js App'
+				phone:''
 			}
 		},
 		methods: {
@@ -29,7 +32,18 @@
 				this.$router.push('/denglu')
 			},
 			xia() {
-				this.$router.push('/duanxin')
+				findPasswordByPhone({ phone: this.phone })
+				.then((result)=>{
+					if (!result.error_code) {
+						console.log(result.data.code)
+						localStorage.setItem('code',result.data.code)
+						this.$router.push('/duanxin')
+					}
+					
+				},(err)=>{
+					console.log(err)
+				})
+				
 			}
 		}
 	}
