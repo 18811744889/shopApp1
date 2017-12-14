@@ -1,46 +1,46 @@
-import fetch from '../utils/fetch'
 
+import fetch from '../utils/fetch'
 //登录
-export function LoginByPhone(data) {
-  return fetch({
+export function LoginByPhone(data){
+	return fetch({
     url: '/login/LoginByPhone',
     method: 'post',
     data
-  })
+})
 }
-
-//注册
-export function regWithPhone(data) {
-  return fetch({
-    url: '/login/regWithPhone',
-    method: 'post',
-    data
-  })
-}
-
-
-//倒计时功能
-export function sendCode(data) {
-  return fetch({
+//获取验证码
+export function sendCode(data){
+	return fetch({
     url: '/login/sendCode',
     method: 'post',
     data
   })
 }
 
-//登录里的忘记密码手机
-export function findPasswordByPhone(data) {
-  return fetch({
-    url: '/login/findPasswordByPhone',
+//注册账号
+export function regWithPhone(data){
+	return fetch({
+    url: '/login/regWithPhone',
     method: 'post',
-    data:data
+    data
   })
 }
 
-export function logout() {
-  return fetch({
-    url: '/login/logout',
-    method: 'post'
+//找回密码
+export function fontPassword(data){
+	return fetch({
+    url: '/login/findPasswordByPhone',
+    method: 'post',
+    data
   })
 }
+//设置新密码
+export function updatePassword(data){
+	return fetch({
+    url: '/login/newPasswordByPhone',
+    method: 'post',
+    data
+  })
+}
+
 
