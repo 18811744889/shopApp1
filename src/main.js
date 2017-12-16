@@ -38,6 +38,8 @@ import describe from './views/XiangQing/describe.vue'
 import pingjia from './views/XiangQing/pingjia.vue'
 import params from './views/XiangQing/params.vue'
 
+import dingdanqueren from './views/shopCar/dingdanqueren.vue'
+
 let vueRouter=new VueRouter({
 	mode:'history',
 	routes:[
@@ -48,6 +50,7 @@ let vueRouter=new VueRouter({
 		{path:'/password1',component:password1},
 		{path:'/password2',component:password2},
 		{path:'/password3',component:password3},
+		{path:'/dingdanqueren',component:dingdanqueren},
 		
 		{path:'/XiangQing',component:XiangQing,
 			children:[

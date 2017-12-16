@@ -4,7 +4,7 @@
   	
   	<div class="banner" >
 			<swiper :options="swiperOption" ref ='mySwiper'>
-				<swiper-slide v-for="data in obj.monthRecommend" :key="data.id"><img :src="data.pic1"></swiper-slide>
+				<swiper-slide v-for="data in obj.bannerList" :key="data.id"><img :src="data.imgpath"></swiper-slide>
 				<div class="swiper-pagination" slot="pagination"></div>
 			</swiper>
     </div>
@@ -77,7 +77,7 @@ export default {
   data () {
     return {
      	obj:{
-     		monthRecommend:[]
+     		bannerList:[]
      	},
      	swiperOption: {
         pagination: {
@@ -122,6 +122,7 @@ export default {
 }
 .banner img{
 	width: 100%;
+	height: 260px;
 }
 #back{
 	 position: absolute;
